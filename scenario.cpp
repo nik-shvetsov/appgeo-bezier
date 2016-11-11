@@ -5,6 +5,7 @@
 #include "submycurve.h"
 #include "beziercurve.h"
 #include "knotvector.h"
+#include "erbscurve.h"
 
 //// hidmanager
 //#include "hidmanager/defaulthidmanager.h"
@@ -112,6 +113,13 @@ void Scenario::initializeScenario() {
   }
 
 
+  auto erbscurve = new CustomERBSCurve(mycurve, 12, 2);
+  erbscurve->toggleDefaultVisualizer();
+  erbscurve->replot(100,2);
+  erbscurve->setColor(GMlib::GMcolor::Silver);
+  erbscurve->translate(GMlib::Vector<float,3>(0,0,2));
+  scene()->insert(erbscurve);
+
 
 
   //Bezier test
@@ -130,6 +138,8 @@ void Scenario::initializeScenario() {
   scene()->insert(mybezcurve);
   */
 
+
+  //Standart GMlib implementation
   /*
   auto mycurve = new GMlib::PCircle<float>(2);
   mycurve->toggleDefaultVisualizer();

@@ -6,8 +6,6 @@
 #include <parametrics/gmerbsevaluator>
 #include <parametrics/gmpbeziercurve>
 
-#define Eps = 1e-5;
-
 CustomERBSCurve::CustomERBSCurve(PCurve<float, 3>* curve, int n, int d)
 {
     _evaluator = new GMlib::ERBSEvaluator<long double>;
@@ -20,6 +18,7 @@ CustomERBSCurve::CustomERBSCurve(PCurve<float, 3>* curve, int n, int d)
     {
         n++;
     }
+
     auto kv = new KnotVector(curve, curve->getParStart(), curve->getParEnd(), n);
     _knotVector = kv->getKnotVector();
 
@@ -62,7 +61,7 @@ void CustomERBSCurve::insertCurve(PCurve<float, 3>* localCurve)
 {
     localCurve->toggleDefaultVisualizer();
     localCurve->replot(_resolutionLocalCurves,1);
-    localCurve->setColor(GMlib::GMcolor::Salmon);
+    localCurve->setColor(GMlib::GMcolor::Red);
     localCurve->setVisible(true);
     localCurve->setCollapsed(false);
     this->insert(localCurve);
@@ -78,7 +77,7 @@ void CustomERBSCurve::eval(float t, int d, bool l)
 {
     int k;
     // Find knot
-    for (k = 1; k < _knotVector.getDim()-2; ++k)
+    for (k = 1; k < _knotVector.getDim() - 2; ++k)
         if (t < _knotVector[k+1]) break;
     //if (k > _knotVector.getDim()-3) k = _knotVector.getDim() -3;
 
@@ -143,7 +142,6 @@ void CustomERBSCurve::getB(GMlib::DVector<float> &B, int k, float t, int d)
       case 2: B[2] = - _evaluator->getDer2();
       case 1: B[1] = - _evaluator->getDer1();
     }
-
 }
 
 void CustomERBSCurve::computeBlending(int d, const GMlib::DVector<float> &B, GMlib::DVector<GMlib::Vector<float, 3> > &c0,
@@ -163,10 +161,15 @@ void CustomERBSCurve::computeBlending(int d, const GMlib::DVector<float> &B, GMl
         c1[i] += (a[j] * B(j)) * c0[i-j];
     }
     this->_p = c1;
-
 }
 
 void CustomERBSCurve::localSimulate(double dt)
 {
+    //auto rotvec = GMlib::Vector<float,3>(0.25f, 0.5f, 1.0f);
+    auto rotvec = GMlib::Vector<float,3>(0.0f, 0.0f, 1.0f);
 
+    for(int i=0; i < _curves.getDim() - 1; i++)
+    {
+        _curves[i]->rotate(dt, rotvec);
+    }
 }
