@@ -78,6 +78,9 @@ set( HDRS
   testtorus.h
   mycurve.h
   submycurve.h
+  beziercurve.h
+  knotvector.h
+  erbscurve.h
   scenario.h
   )
 
@@ -100,6 +103,9 @@ set( SRCS
   application/main.cpp
   mycurve.cpp
   submycurve.cpp
+  beziercurve.cpp
+  knotvector.cpp
+  erbscurve.cpp
   scenario.cpp
   )
 

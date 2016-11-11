@@ -16,6 +16,8 @@ public:
 
   void    initializeScenario() override;
   void    cleanupScenario() override;
+private:
+
 
 };
 

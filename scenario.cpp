@@ -3,6 +3,8 @@
 #include "testtorus.h"
 #include "mycurve.h"
 #include "submycurve.h"
+#include "beziercurve.h"
+#include "knotvector.h"
 
 //// hidmanager
 //#include "hidmanager/defaulthidmanager.h"
@@ -14,6 +16,7 @@
 
 // qt
 #include <QQuickItem>
+#include <QDebug>
 
 
 
@@ -76,18 +79,56 @@ void Scenario::initializeScenario() {
   scene()->insert(mycurve);
 
 
-  std::vector<GMlib::Color> colorsVec = {GMlib::GMcolor::Blue,GMlib::GMcolor::Red,GMlib::GMcolor::Green,GMlib::GMcolor::Yellow,GMlib::GMcolor::Orange,GMlib::GMcolor::Aqua};
+  std::vector<GMlib::Color> colorsVec = {GMlib::GMcolor::Blue,GMlib::GMcolor::Red,GMlib::GMcolor::Green,GMlib::GMcolor::Yellow,GMlib::GMcolor::Orange,GMlib::GMcolor::Aqua,
+                                        GMlib::GMcolor::AliceBlue,GMlib::GMcolor::AquaMarine,GMlib::GMcolor::Beige,GMlib::GMcolor::BlueViolet,GMlib::GMcolor::BurlyWood,GMlib::GMcolor::Coral
+                                        };
+  int parts = 13; //12
 
-  for (int i = 0; i < 6; i++)
+  auto kv = new KnotVector(mycurve, 0, M_2PI, parts);
+  GMlib::DVector<float> num_kv = kv->getKnotVector();
+
+
+  int size = num_kv.getDim();
+  for (int i = 0; i < size; i++)
   {
-      auto submycurve = new SubMyCurve(mycurve,i*M_2PI/6,(i+1)*M_2PI/6);
+      qDebug() << num_kv[i]/M_2PI;
+  }
+
+
+
+  std::vector<SubMyCurve*> _subPartsCurve;
+  for (int i = 0; i < parts-1; i++) //(int i = 0; i < parts; i++)
+  {
+      //auto submycurve = new SubMyCurve(mycurve,i*M_2PI/parts,(i+1)*M_2PI/parts);
+      auto submycurve = new SubMyCurve(mycurve,num_kv[i+1],num_kv[i+2]);
+      qDebug() << num_kv[i+1] << num_kv[i+2];
       submycurve->toggleDefaultVisualizer();
       //mycurve->insertVisualizer(curve_visualizer);
       submycurve->replot(100,2);
       submycurve->setColor(colorsVec[i]);
       submycurve->translate(GMlib::Vector<float,3>(0,0,1));
+      _subPartsCurve.push_back(submycurve);
       scene()->insert(submycurve);
   }
+
+
+
+
+  //Bezier test
+  /*
+  GMlib::DVector<GMlib::Vector<float,3> > controlPoints;
+  controlPoints.append(GMlib::Vector<float,3>(0.0, 0.0, 0.0));
+  controlPoints.append(GMlib::Vector<float,3>(2.0, 0.0, 0.0));
+  controlPoints.append(GMlib::Vector<float,3>(0.5, 2.0, 0.0));
+  controlPoints.append(GMlib::Vector<float,3>(2.0, 2.0, 0.0));
+
+  auto mybezcurve = new CustomBezierCurve(controlPoints, 0, 0.5, 1);
+  mybezcurve->toggleDefaultVisualizer();
+  //mycurve->insertVisualizer(curve_visualizer);
+  mybezcurve->replot(100,2);
+  mybezcurve->setColor(GMlib::GMcolor::White);
+  scene()->insert(mybezcurve);
+  */
 
   /*
   auto mycurve = new GMlib::PCircle<float>(2);

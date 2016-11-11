@@ -11,18 +11,18 @@ class MyCurve : public PCurve<float,3>
 {
     GM_SCENEOBJECT(MyCurve)
     public:
-    MyCurve( float radius = float(20) );
-    MyCurve( const MyCurve& copy );
+    MyCurve( float scalefactor = float(5) );
+//    MyCurve( const MyCurve& copy );
 
     virtual ~MyCurve();
 
-    float           getRadius();
+    float           getScaleFactor();
     bool            isClosed() const;
-    void            setRadius( float radius = float(20) );
+    void            setScaleFactor( float scalefactor = float(5) );
 
 
 protected:
-    float               _r;
+    float               _scf;
 
     void                eval(float t, int d, bool l);
     float               getEndP();
