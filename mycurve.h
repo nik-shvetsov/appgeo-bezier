@@ -14,7 +14,7 @@ class MyCurve : public PCurve<float,3>
     MyCurve( float scalefactor = float(5) );
 //    MyCurve( const MyCurve& copy );
 
-    virtual ~MyCurve();
+    ~MyCurve();
 
     float           getScaleFactor();
     bool            isClosed() const;

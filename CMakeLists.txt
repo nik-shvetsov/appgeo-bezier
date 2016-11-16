@@ -81,6 +81,8 @@ set( HDRS
   beziercurve.h
   knotvector.h
   erbscurve.h
+  bspline.h
+  uevaluator.h
   scenario.h
   )
 
@@ -106,6 +108,8 @@ set( SRCS
   beziercurve.cpp
   knotvector.cpp
   erbscurve.cpp
+  bspline.cpp
+  uevaluator.cpp
   scenario.cpp
   )
 

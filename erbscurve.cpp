@@ -5,10 +5,14 @@
 
 #include <parametrics/gmerbsevaluator>
 #include <parametrics/gmpbeziercurve>
+//GMlib::PERBSCurve
 
 CustomERBSCurve::CustomERBSCurve(PCurve<float, 3>* curve, int n, int d)
 {
+    this->_dm = GM_DERIVATION_EXPLICIT;
+
     _evaluator = new GMlib::ERBSEvaluator<long double>;
+    //or use logistic function
 
     if (curve->isClosed())
     {
@@ -19,6 +23,7 @@ CustomERBSCurve::CustomERBSCurve(PCurve<float, 3>* curve, int n, int d)
         n++;
     }
 
+
     auto kv = new KnotVector(curve, curve->getParStart(), curve->getParEnd(), n);
     _knotVector = kv->getKnotVector();
 
@@ -26,7 +31,7 @@ CustomERBSCurve::CustomERBSCurve(PCurve<float, 3>* curve, int n, int d)
     _curves.setDim(n);
     for(int i = 1; i < n; i++)
     {
-        _curves[i-1] = makeLocalCurve(curve, _knotVector[i-1], _knotVector[i], _knotVector[i+1], d);
+        _curves[i-1] = makeLocalCurve(curve, _knotVector[i-1], _knotVector[i+1], _knotVector[i], d); //s,e,t
         insertCurve(_curves[i-1]);
     }
 
@@ -36,7 +41,7 @@ CustomERBSCurve::CustomERBSCurve(PCurve<float, 3>* curve, int n, int d)
     }
     else
     {
-        _curves[n-1] = makeLocalCurve(curve, _knotVector[n-1], _knotVector[n], _knotVector[n+1], d);
+        _curves[n-1] = makeLocalCurve(curve, _knotVector[n-1], _knotVector[n + 1], _knotVector[n], d);
         insertCurve(_curves[n-1]);
     }
 }
@@ -61,7 +66,7 @@ void CustomERBSCurve::insertCurve(PCurve<float, 3>* localCurve)
 {
     localCurve->toggleDefaultVisualizer();
     localCurve->replot(_resolutionLocalCurves,1);
-    localCurve->setColor(GMlib::GMcolor::Red);
+    localCurve->setColor(GMlib::GMcolor::Green);
     localCurve->setVisible(true);
     localCurve->setCollapsed(false);
     this->insert(localCurve);
@@ -78,11 +83,12 @@ void CustomERBSCurve::eval(float t, int d, bool l)
     int k;
     // Find knot
     for (k = 1; k < _knotVector.getDim() - 2; ++k)
+    {
         if (t < _knotVector[k+1]) break;
-    //if (k > _knotVector.getDim()-3) k = _knotVector.getDim() -3;
+    }
 
     //First curve
-    GMlib::DVector< GMlib::Vector<float,3> > c0 = _curves[k-1]->evaluateParent(mapToLocal(t, k), d);
+    GMlib::DVector<GMlib::Vector<float,3>> c0 = _curves[k-1]->evaluateParent(mapToLocal(t, k), d); //(new t, d)
 
     if (std::abs(t - _knotVector[k])  < 1e-5 )
     {
@@ -91,7 +97,7 @@ void CustomERBSCurve::eval(float t, int d, bool l)
     }
 
     //Second curve
-    GMlib::DVector< GMlib::Vector<float,3> > c1 = _curves[k]->evaluateParent(mapToLocal(t, k+1), d);
+    GMlib::DVector<GMlib::Vector<float,3>> c1 = _curves[k]->evaluateParent(mapToLocal(t, k+1), d);
 
     //Blend
     GMlib::DVector<float> B;
@@ -109,7 +115,6 @@ float CustomERBSCurve::getStartP()
     {
         return 0;
     }
-
 }
 
 float CustomERBSCurve::getEndP()
@@ -145,31 +150,36 @@ void CustomERBSCurve::getB(GMlib::DVector<float> &B, int k, float t, int d)
 }
 
 void CustomERBSCurve::computeBlending(int d, const GMlib::DVector<float> &B, GMlib::DVector<GMlib::Vector<float, 3> > &c0,
-                            GMlib::DVector<GMlib::Vector<float, 3> > &c1)
+                                      GMlib::DVector<GMlib::Vector<float, 3> > &c1)
 {
     c0 -= c1;
 
     GMlib::DVector<float> a(d+1);
     for( int i = 0; i < B.getDim(); i++ )
     {
-      // Compute the pascal triangle numbers
-      a[i] = 1;
-      for( int j = i-1; j > 0; j-- )
-        a[j] += a[j-1];
-      // Compute the sample position data
-      for( int j = 0; j <= i; j++ )
-        c1[i] += (a[j] * B(j)) * c0[i-j];
+        // Compute the pascal triangle numbers
+        a[i] = 1;
+        for( int j = i-1; j > 0; j-- )
+        {
+            a[j] += a[j-1];
+        }
+        // Compute the sample position data
+        for( int j = 0; j <= i; j++ )
+        {
+            c1[i] += (a[j] * B(j)) * c0[i-j];
+        }
     }
+
     this->_p = c1;
 }
 
 void CustomERBSCurve::localSimulate(double dt)
 {
     //auto rotvec = GMlib::Vector<float,3>(0.25f, 0.5f, 1.0f);
-    auto rotvec = GMlib::Vector<float,3>(0.0f, 0.0f, 1.0f);
+    auto rotvec = GMlib::Vector<float,3>(1.0f, 1.0f, 1.0f);
 
     for(int i=0; i < _curves.getDim() - 1; i++)
     {
-        _curves[i]->rotate(dt, rotvec);
+        _curves[i]->rotate(GMlib::Angle(2), rotvec);
     }
 }

@@ -12,10 +12,7 @@ KnotVector::KnotVector(GMlib::PCurve<float,3>* c, float start, float end, int n)
         _dv.append(start - increment);
     }
 
-    else
-    {
-        _dv.append(start);
-    }
+
     /*
     while (currentKnotValue < end)
     {

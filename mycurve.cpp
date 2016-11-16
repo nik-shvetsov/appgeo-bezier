@@ -2,8 +2,8 @@
 
 MyCurve::MyCurve( float scalefactor )
 {
-    _scf = scalefactor;
     this->_dm = GM_DERIVATION_EXPLICIT;
+    _scf = scalefactor;
 }
 
 //MyCurve::MyCurve( const MyCurve& copy ) : PCurve<float,3>(copy) {}
@@ -27,7 +27,8 @@ void MyCurve::eval( float t, int d, bool /*l*/ ) {
     const float st_dd = _scf * (3 * sin(t) - 25 * sin(5 * t));
 
     const float ct_ddd = _scf * (3 * sin(t) + 125 * sin(5 * t));
-    const float st_ddd = _scf * (3 * cos(t) - 125 * cos(5 * t));
+    const float st_ddd = _scf * (3 * cos(t) - 125
+                                 * cos(5 * t));
 
     const float ct_dddd = _scf * (3 * cos(t) + 625 * cos(5 * t));
     const float st_dddd = _scf * (-3 * sin(t) + 625 * sin(5 * t));
@@ -92,7 +93,7 @@ void MyCurve::eval( float t, int d, bool /*l*/ ) {
 
 float MyCurve::getEndP() {
 
-    return float( M_2PI );
+    return float(M_2PI);
 }
 
 float MyCurve::getStartP() {

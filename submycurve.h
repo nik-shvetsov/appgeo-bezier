@@ -20,7 +20,7 @@ public:
 protected:
     PCurve<float, 3>*              _c;
     float                          _s;
-    float                          _t;
+    //float                          _t;
     float                          _e;
     GMlib::Vector<float,3>     _trans;
 

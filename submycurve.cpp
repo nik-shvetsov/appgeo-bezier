@@ -33,8 +33,15 @@
 
   SubMyCurve::~SubMyCurve() {}
 
-  // Virtual functions from PSurf
-  //******************************
+  void SubMyCurve::set(PCurve<float, 3>* c, float s, float e, float t)
+  {
+    _c = c;
+    _s = s;
+    _t = t;
+    _e = e;
+  }
+
+  // Virtual functions
 
   void SubMyCurve::eval( float t, int d, bool /*l*/ )
   {
@@ -57,12 +64,4 @@
       return false;
   }
 
-  // Private help functions
 
-  void SubMyCurve::set(PCurve<float, 3>* c, float s, float e, float t)
-  {
-    _c = c;
-    _s = s;
-    _t = t;
-    _e = e;
-  }

@@ -34,7 +34,7 @@ class CustomERBSCurve : public PCurve<float,3>
 
         float mapToLocal(float t, int tk);
 
-        void getB( GMlib::DVector<float>& B, int k,float t, int d);
+        void getB( GMlib::DVector<float>& B, int k, float t, int d);
 
         void computeBlending(int d, const GMlib::DVector<float>& B, GMlib::DVector<GMlib::Vector<float,3>>& c0,
                        GMlib::DVector<GMlib::Vector<float,3>>& c1);
