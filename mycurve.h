@@ -1,19 +1,13 @@
 #ifndef MYCURVE_H
 #define MYCURVE_H
 
-#include <parametrics/gmpcurve>
-#include <gmSceneModule>
 #include <gmParametricsModule>
 
-using namespace GMlib;
-
-class MyCurve : public PCurve<float,3>
+class MyCurve : public GMlib::PCurve<float,3>
 {
     GM_SCENEOBJECT(MyCurve)
-    public:
-    MyCurve( float scalefactor = float(5) );
-//    MyCurve( const MyCurve& copy );
-
+public:
+    MyCurve(float scalefactor = float(5));
     ~MyCurve();
 
     float           getScaleFactor();
@@ -28,7 +22,8 @@ protected:
     float               getEndP();
     float               getStartP();
 
-}; // END class
+    void localSimulate(double dt);
 
+};
 
 #endif // MYCURVE_H

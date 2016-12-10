@@ -71,6 +71,8 @@ void Scenario::initializeScenario() {
 
 
   //auto curve_visualizer = new GMlib::PCurveVisualizer<float,3>;
+  //auto curve_visualizer = new GMlib::PCurveDefaultVisualizer<float,3>;
+
 
   auto mycurve = new MyCurve(2);
   mycurve->toggleDefaultVisualizer();
@@ -83,60 +85,64 @@ void Scenario::initializeScenario() {
   std::vector<GMlib::Color> colorsVec = {GMlib::GMcolor::Blue,GMlib::GMcolor::Red,GMlib::GMcolor::Green,GMlib::GMcolor::Yellow,GMlib::GMcolor::Orange,GMlib::GMcolor::Aqua,
                                         GMlib::GMcolor::AliceBlue,GMlib::GMcolor::AquaMarine,GMlib::GMcolor::Beige,GMlib::GMcolor::BlueViolet,GMlib::GMcolor::BurlyWood,GMlib::GMcolor::Coral
                                         };
-  int parts = 13; //12
+  //int parts = 12; //12
 
-  auto kv = new KnotVector(mycurve, 0, M_2PI, parts);
-  GMlib::DVector<float> num_kv = kv->getKnotVector();
+//  auto kv = new KnotVector(mycurve, parts); //0, M_2PI
+//  GMlib::DVector<float> num_kv = kv->getKnotVector();
 
-  qDebug() << "Display knot vector:";
-  int size = num_kv.getDim();
-  for (int i = 0; i < size; i++)
-  {
-      qDebug() << num_kv[i];
-  }
-  qDebug() << "Finished display knot vector";
+//  std::vector<SubMyCurve*> _subPartsCurve;
+//  for (int i = 0; i < parts; i++) //(int i = 0; i < parts; i++)
+//  {
+//      //auto submycurve = new SubMyCurve(mycurve,i*M_2PI/parts,(i+1)*M_2PI/parts);
+//      auto submycurve = new SubMyCurve(mycurve,num_kv[i+1],num_kv[i+2]);
+//      //qDebug() << num_kv[i] << num_kv[i+1] << num_kv[i+2];
+//      submycurve->toggleDefaultVisualizer();
+//      //mycurve->insertVisualizer(curve_visualizer);
+//      submycurve->replot(100,2);
+//      submycurve->setColor(colorsVec[i]);
+//      submycurve->translate(GMlib::Vector<float,3>(0,0,1));
+//      _subPartsCurve.push_back(submycurve);
+//      scene()->insert(submycurve);
+//  }
 
-
-  std::vector<SubMyCurve*> _subPartsCurve;
-  for (int i = 0; i < parts; i++) //(int i = 0; i < parts; i++)
-  {
-      //auto submycurve = new SubMyCurve(mycurve,i*M_2PI/parts,(i+1)*M_2PI/parts);
-      auto submycurve = new SubMyCurve(mycurve,num_kv[i+1],num_kv[i+2]);
-      qDebug() << num_kv[i] << num_kv[i+1] << num_kv[i+2];
-      submycurve->toggleDefaultVisualizer();
-      //mycurve->insertVisualizer(curve_visualizer);
-      submycurve->replot(100,2);
-      submycurve->setColor(colorsVec[i]);
-      submycurve->translate(GMlib::Vector<float,3>(0,0,1));
-      _subPartsCurve.push_back(submycurve);
-      scene()->insert(submycurve);
-  }
-
-
-  auto erbscurve = new CustomERBSCurve(mycurve, 12, 2);
-  erbscurve->toggleDefaultVisualizer();
-  erbscurve->replot(500,2);
-  erbscurve->setColor(GMlib::GMcolor::Silver);
-  erbscurve->translate(GMlib::Vector<float,3>(0,0,2));
-  scene()->insert(erbscurve);
-
+  //bezier local curves
+//  std::vector<CustomBezierCurve*> _bezierPartsCurve;
+//  for (int i = 0; i < parts; i++) //(int i = 0; i < parts; i++)
+//  {
+//      //auto submycurve = new SubMyCurve(mycurve,i*M_2PI/parts,(i+1)*M_2PI/parts);
+//      auto bezmycurve = new CustomBezierCurve(mycurve,num_kv[i+1],num_kv[i+3],num_kv[i+2], 2);
+//      //qDebug() << num_kv[i] << num_kv[i+1] << num_kv[i+2];
+//      bezmycurve->toggleDefaultVisualizer();
+//      //bezmycurve->insertVisualizer(curve_visualizer);
+//      bezmycurve->replot(100,2);
+//      bezmycurve->setColor(colorsVec[i]);
+//      bezmycurve->translate(GMlib::Vector<float,3>(0,0,2));
+//      _bezierPartsCurve.push_back(bezmycurve);
+//      scene()->insert(bezmycurve);
+//  }
 
 
-  //Bezier test
+//  int d = 4; //4 - ideal
+//  auto erbscurve = new CustomERBSCurve(CustomERBSCurve::LOCAL_CURVES_TYPE::BEZIER_CURVES, mycurve, 200, d);
+//  erbscurve->toggleDefaultVisualizer();
+//  erbscurve->replot(200,4);
+//  erbscurve->setColor(GMlib::GMcolor::Silver);
+//  erbscurve->translate(GMlib::Vector<float,3>(0,0,3));
+//  scene()->insert(erbscurve);
 
-  GMlib::DVector<GMlib::Vector<float,3>> controlPointsY;
-  controlPointsY.append(GMlib::Vector<float,3>(0.0, 0.0, 0.0));
-  controlPointsY.append(GMlib::Vector<float,3>(0.0, 20.0, 0.0));
-  //controlPoints.append(GMlib::Vector<float,3>(20.0, 25.0, 0.0));
-  //controlPoints.append(GMlib::Vector<float,3>(30.0, 5.0, 0.0));
 
-  auto mybezcurveY = new CustomBezierCurve(controlPointsY, 0, 0.5, 1);
-  mybezcurveY->toggleDefaultVisualizer();
-  //mycurve->insertVisualizer(curve_visualizer);
-  mybezcurveY->replot(100,2);
-  mybezcurveY->setColor(GMlib::GMcolor::White);
-  scene()->insert(mybezcurveY);
 
+  //custom bspline test
+
+  auto erbs = new CustomERBS(mycurve, 12, 3); //12
+  erbs->toggleDefaultVisualizer();
+  //bspline->insertVisualizer(curve_visualizer);
+  erbs->replot(500,2);
+  erbs->setColor(GMlib::GMcolor::Cyan);
+  erbs->translate(GMlib::Vector<float,3>(0,0,3));
+
+  _cerbs.push_back(erbs);
+  scene()->insert(erbs);
 
 
   //Standart GMlib implementation
@@ -176,4 +182,12 @@ void Scenario::initializeScenario() {
 
 void Scenario::cleanupScenario() {
 
+}
+
+void Scenario::simulatingReplot()
+{
+    for(int i = 0; i < _cerbs.size(); i++)
+    {
+           _cerbs[i]->replot();
+    }
 }

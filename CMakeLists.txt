@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 14)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything")  # -Weverything equivalent to g++ -pedantic, -Werror and -Wall
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Werror")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # -pedantic -Wall -Werror")
 endif()
 
 # Nice name for the IDEs
@@ -75,14 +75,14 @@ set( HDRS
   application/window.h
   application/utils.h
 
-  testtorus.h
+  #testtorus.h
   mycurve.h
   submycurve.h
   beziercurve.h
   knotvector.h
   erbscurve.h
-  bspline.h
   uevaluator.h
+  controller.h
   scenario.h
   )
 
@@ -108,8 +108,8 @@ set( SRCS
   beziercurve.cpp
   knotvector.cpp
   erbscurve.cpp
-  bspline.cpp
   uevaluator.cpp
+  controller.cpp
   scenario.cpp
   )
 

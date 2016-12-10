@@ -2,7 +2,7 @@
 
 MyCurve::MyCurve( float scalefactor )
 {
-    this->_dm = GM_DERIVATION_EXPLICIT;
+    this->_dm = GMlib::GM_DERIVATION_EXPLICIT;
     _scf = scalefactor;
 }
 
@@ -37,7 +37,7 @@ void MyCurve::eval( float t, int d, bool /*l*/ ) {
     this->_p[0][1] = st;
     this->_p[0][2] = float(0);
 
-    if( this->_dm == GM_DERIVATION_EXPLICIT ) {
+    if( this->_dm == GMlib::GM_DERIVATION_EXPLICIT ) {
 
         if( d > 0 ) {
 
@@ -114,4 +114,9 @@ bool MyCurve::isClosed() const {
 void MyCurve::setScaleFactor( float scalefactor ) {
 
     _scf = scalefactor;
+}
+
+void MyCurve::localSimulate(double dt)
+{
+
 }

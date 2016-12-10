@@ -1,185 +1,210 @@
 #include "erbscurve.h"
 #include "submycurve.h"
-#include "mycurve.h"
 #include "beziercurve.h"
+#include "knotvector.h"
+#include <QDebug>
 
-#include <parametrics/gmerbsevaluator>
-#include <parametrics/gmpbeziercurve>
-//GMlib::PERBSCurve
-
-CustomERBSCurve::CustomERBSCurve(PCurve<float, 3>* curve, int n, int d)
+CustomERBS::CustomERBS(PCurve<float,3> *c, int n)
 {
-    this->_dm = GM_DERIVATION_EXPLICIT;
+    this->_type = LOCAL_CURVE_TYPE::SUB_CURVE;
+    this->_curve = c;
 
-    _evaluator = new GMlib::ERBSEvaluator<long double>;
-    //or use logistic function
+    this->_n = n;
+    this->_s = c->getParStart();
+    this->_e = c->getParEnd();
 
-    if (curve->isClosed())
+    _kv = generateKnotVector();
+    if (_curve->isClosed()) _n++;
+    createSubcurves(_curve);
+}
+
+CustomERBS::CustomERBS(PCurve<float,3>* c, int n, int d)
+{
+    this->_type = LOCAL_CURVE_TYPE::BEZIER_CURVE;
+    this->_curve = c;
+
+    this->_n = n;
+    this->_s = c->getParStart();
+    this->_e = c->getParEnd();
+    //this->_d = d;
+
+    _kv = generateKnotVector();
+    if (_curve->isClosed()) _n++;
+    createBezierCurves(_curve, d);
+}
+
+CustomERBS::~CustomERBS() {}
+
+float CustomERBS::getT(float t, int index)
+{
+    switch(_type)
     {
-        setClosed(true);
+    case SUB_CURVE:
+        return t;
+    case BEZIER_CURVE:
+        float w = (t - _kv[index - 1])/(_kv[index + 1] - _kv[index - 1]); //omega for bezier
+        return w;
     }
-    if (isClosed())
+    //return t; //need to return something for compiler
+}
+
+void CustomERBS::createSubcurves(PCurve<float,3> *c)
+{
+    _localCurves.setDim(_n);
+
+    for(int i = 1; i < _n; i++)
     {
-        n++;
+        _localCurves[i-1] = new SubMyCurve(c, _kv[i-1], _kv[i+1], _kv[i]);
     }
 
-
-    auto kv = new KnotVector(curve, curve->getParStart(), curve->getParEnd(), n);
-    _knotVector = kv->getKnotVector();
-
-    //local curves
-    _curves.setDim(n);
-    for(int i = 1; i < n; i++)
+    if (_curve->isClosed())
     {
-        _curves[i-1] = makeLocalCurve(curve, _knotVector[i-1], _knotVector[i+1], _knotVector[i], d); //s,e,t
-        insertCurve(_curves[i-1]);
-    }
-
-    if (isClosed())
-    {
-        _curves[n-1] = _curves[0];
+        _localCurves[_n-1] = _localCurves[0];
     }
     else
     {
-        _curves[n-1] = makeLocalCurve(curve, _knotVector[n-1], _knotVector[n + 1], _knotVector[n], d);
-        insertCurve(_curves[n-1]);
+        _localCurves[_n-1] = new SubMyCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n]);
     }
+
+    visualizeLocalCurves();
 }
 
-//CustomERBSCurve::CustomERBSCurve(const CustomERBSCurve &copy)
-//{
-
-//}
-
-bool CustomERBSCurve::isClosed() const
+void CustomERBS::createBezierCurves(PCurve<float,3>* c, int d)
 {
-    return _isClosed;
+    _localCurves.setDim(_n);
 
-}
-
-void CustomERBSCurve::setClosed(bool closed)
-{
-    _isClosed = closed;
-}
-
-void CustomERBSCurve::insertCurve(PCurve<float, 3>* localCurve)
-{
-    localCurve->toggleDefaultVisualizer();
-    localCurve->replot(_resolutionLocalCurves,1);
-    localCurve->setColor(GMlib::GMcolor::Green);
-    localCurve->setVisible(true);
-    localCurve->setCollapsed(false);
-    this->insert(localCurve);
-}
-
-GMlib::PCurve<float, 3>* CustomERBSCurve::makeLocalCurve(PCurve<float, 3>* curve, float start, float end, float t, int d)
-{
-    //return new PSubCurve<float>(curve, start, end, t);
-    return new SubMyCurve(curve, start, end, t);
-}
-
-void CustomERBSCurve::eval(float t, int d, bool l)
-{
-    int k;
-    // Find knot
-    for (k = 1; k < _knotVector.getDim() - 2; ++k)
+    for(int i = 1; i < _n; i++)
     {
-        if (t < _knotVector[k+1]) break;
+        _localCurves[i-1] = new CustomBezierCurve(c, _kv[i-1], _kv[i+1], _kv[i], d);
     }
 
-    //First curve
-    GMlib::DVector<GMlib::Vector<float,3>> c0 = _curves[k-1]->evaluateParent(mapToLocal(t, k), d); //(new t, d)
-
-    if (std::abs(t - _knotVector[k])  < 1e-5 )
+    if (_curve->isClosed())
     {
-        _p = c0;
-        return;
+        _localCurves[_n-1] = _localCurves[0];
+    }
+    else
+    {
+        _localCurves[_n-1] = new CustomBezierCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n], d);
     }
 
-    //Second curve
-    GMlib::DVector<GMlib::Vector<float,3>> c1 = _curves[k]->evaluateParent(mapToLocal(t, k+1), d);
+    visualizeLocalCurves();
 
-    //Blend
+}
+
+void CustomERBS::visualizeLocalCurves()
+{
+    for (int i = 0; i < _localCurves.getDim() - 1; i++)
+    {
+        _localCurves[i]->toggleDefaultVisualizer();
+        _localCurves[i]->replot(50,2);
+        _localCurves[i]->setColor(GMlib::GMcolor::GreenYellow);
+        _localCurves[i]->setVisible(false);
+        this->insert(_localCurves[i]);
+    }
+}
+
+GMlib::DVector<float> CustomERBS::generateKnotVector()
+{
+    auto kv = new KnotVector(_curve, _n);
+    return kv->getKnotVector();
+}
+
+
+void CustomERBS::eval(float t, int d, bool)
+{
+    //number of derivatives to compute
+    this->_p.setDim(d+1);
+
+    //c(t) = sum ci(t)*Bi(t)
+
+    //qDebug() << "t" << t;
+    int index = findIndex(t);
+    //qDebug() << "index of t" << index;
+
+    float w = (t -_kv[index])/(_kv[index+1] - _kv[index]);
+
+    _scale = 1.0 / (_kv[index+1] - _kv[index]);
+    GMlib::DVector<float> BFunction = makeBFunction(w, d, _scale);
+
+    GMlib::DVector<GMlib::Vector<float,3>> c1 = _localCurves[index-1]->evaluateParent(getT(t, index), d);
+    GMlib::DVector<GMlib::Vector<float,3>> c2 = _localCurves[index]->evaluateParent(getT(t, index+1), d);
+
+    auto gt = c2 - c1;
+
+    this->_p[0] = c1[0]+ BFunction[0]*(gt[0]);
+
+    if (d > 0)
+        this->_p[1] = c1[1] + BFunction[0]*gt[1] + BFunction[1]*gt[0];
+    if (d > 1)
+        this->_p[2] = c1[2] + BFunction[0]*gt[2] + 2*BFunction[1]*gt[1] + BFunction[2]*gt[0];
+//    if (d > 2)
+//        this->_p[3] = c1[3];
+//    if (d > 3)
+//        this->_p[4] = c1[4];
+}
+
+
+float CustomERBS::getStartP()
+{
+    return _kv[1];
+}
+
+float CustomERBS::getEndP()
+{
+    return _kv[_kv.getDim()-2];
+}
+
+bool CustomERBS::isClosed()
+{
+    return _curve->isClosed();
+}
+
+GMlib::DVector<float> CustomERBS::makeBFunction(float t, float d, float scale)
+{
     GMlib::DVector<float> B;
-    getB(B,k,t,d);
-    computeBlending(d, B, c0, c1);
+    B.setDim(d+1);
+//    B[0] = 3*pow(t,2) - 2*pow(t,3);
+//    if (d>0)
+//        B[1] = (6*t - 6*pow(t,2))*scale;
+//    if (d>1)
+//        B[2] = (6 - 12*t)*scale*scale;
+//    if (d>2)
+//        B[3] = -12*scale*scale*scale;
+
+    B[0] = pow(sin(M_PI_2 * t),2);
+    if (d>0)
+        B[1] = (0.5 * M_PI * sin(M_PI * t))*scale;
+    if (d>1)
+        B[2] = (0.5 * M_PI * M_PI * cos(M_PI * t))*scale*scale;
+    if (d>2)
+        B[3] = (-0.5 * M_PI * M_PI * M_PI * sin(M_PI * t) )*scale*scale*scale;
+
+    return B;
 }
 
-float CustomERBSCurve::getStartP()
+int CustomERBS::findIndex(float t)
 {
-    if (_knotVector.getDim() > 0)
-    {
-        return _knotVector[1];
-    }
-    else
-    {
-        return 0;
-    }
-}
+    int index = 1;
 
-float CustomERBSCurve::getEndP()
-{
-    if (_knotVector.getDim() > 1)
+    for (int i = 1; i < _kv.getDim() - 2; ++i)
     {
-        return _knotVector[_knotVector.getDim() - 2];
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-float CustomERBSCurve::mapToLocal(float t, int tk)
-{
-    float c_start = _curves[tk-1]->getParStart();
-    float c_delta = _curves[tk-1]->getParDelta();
-    return c_start + (t - _knotVector[tk-1]) / (_knotVector[tk+1] - _knotVector[tk-1]) * c_delta;
-}
-
-void CustomERBSCurve::getB(GMlib::DVector<float> &B, int k, float t, int d)
-{
-    B.setDim(d + 1);
-    _evaluator->set(_knotVector[k], _knotVector[k+1] - _knotVector[k]);
-    B[0] = 1 - (*_evaluator)(t);
-    switch(d)
-    {
-      case 3: B[3] = float(0);
-      case 2: B[2] = - _evaluator->getDer2();
-      case 1: B[1] = - _evaluator->getDer1();
-    }
-}
-
-void CustomERBSCurve::computeBlending(int d, const GMlib::DVector<float> &B, GMlib::DVector<GMlib::Vector<float, 3> > &c0,
-                                      GMlib::DVector<GMlib::Vector<float, 3> > &c1)
-{
-    c0 -= c1;
-
-    GMlib::DVector<float> a(d+1);
-    for( int i = 0; i < B.getDim(); i++ )
-    {
-        // Compute the pascal triangle numbers
-        a[i] = 1;
-        for( int j = i-1; j > 0; j-- )
+        if (t >= _kv[i] && t < _kv[i+1])
         {
-            a[j] += a[j-1];
-        }
-        // Compute the sample position data
-        for( int j = 0; j <= i; j++ )
-        {
-            c1[i] += (a[j] * B(j)) * c0[i-j];
+            index = i;
+            return index;
         }
     }
 
-    this->_p = c1;
+    return _kv.getDim() - 3; // if (t == _kv[i+1])
+
 }
 
-void CustomERBSCurve::localSimulate(double dt)
+void CustomERBS::localSimulate(double dt)
 {
-    //auto rotvec = GMlib::Vector<float,3>(0.25f, 0.5f, 1.0f);
     auto rotvec = GMlib::Vector<float,3>(1.0f, 1.0f, 1.0f);
-
-    for(int i=0; i < _curves.getDim() - 1; i++)
+    for(int i=0; i < _localCurves.getDim() - 1; i++)
     {
-        _curves[i]->rotate(GMlib::Angle(2), rotvec);
+        _localCurves[i]->rotate(GMlib::Angle(2), rotvec);
     }
+
 }

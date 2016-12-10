@@ -6,16 +6,13 @@
 class KnotVector
 {
     public:
-    KnotVector(GMlib::PCurve<float,3>* c, float start, float end, int n);
+    //KnotVector(GMlib::PCurve<float,3>* c, float start, float end, int n);//order
+    KnotVector(GMlib::PCurve<float,3>* c, int n);
     ~KnotVector();
 
     GMlib::DVector<float> getKnotVector();
 
-//    bool isClosed() const;
-//    void setClosed(bool closed);
-
 private:
-//    bool _isClosed;
     GMlib::DVector<float> _dv;
 
 }; // END class

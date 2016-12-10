@@ -471,6 +471,11 @@ void DefaultHidManager::heOpenCloseHidHelp() {
   emit signOpenCloseHidHelp();
 }
 
+void DefaultHidManager::heSimulateReplot()
+{
+    emit signSimulateReplot();
+}
+
 Camera* DefaultHidManager::findCamera( const QString& view_name ) const {
 
   return _gmlib->camera(view_name).get();

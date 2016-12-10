@@ -103,6 +103,9 @@ GuiApplication::afterOnSceneGraphInitialized() {
   connect( &_window, &Window::beforeRendering,        &_hidmanager, &DefaultHidManager::triggerOGLActions,
            Qt::DirectConnection );
 
+  connect( &_window, &Window::beforeRendering,         this, &GuiApplication::replotSimulate,
+             Qt::DirectConnection );
+
   // Register an application close event in the hidmanager;
   // the QWindow must be closed instead of the application being quitted,
   // this is to make sure that GL exits gracefully
@@ -125,3 +128,8 @@ GuiApplication::afterOnSceneGraphInitialized() {
 }
 
 const GuiApplication& GuiApplication::instance() {  return *_instance; }
+
+void GuiApplication::replotSimulate()
+{
+    _scenario.simulatingReplot();
+}
