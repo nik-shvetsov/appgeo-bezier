@@ -14,11 +14,12 @@ CustomERBS::CustomERBS(PCurve<float,3> *c, int n)
     this->_e = c->getParEnd();
 
     _kv = generateKnotVector();
-    if (_curve->isClosed()) _n++;
-    createSubcurves(_curve);
+    if (_curve->isClosed()) _n++; //numofLocalCurves
+    //createSubcurves(_curve);
+    createLocalCurves(_curve, _deg);
 }
 
-CustomERBS::CustomERBS(PCurve<float,3>* c, int n, int d)
+CustomERBS::CustomERBS(PCurve<float,3>* c, int n, int deg)
 {
     this->_type = LOCAL_CURVE_TYPE::BEZIER_CURVE;
     this->_curve = c;
@@ -26,11 +27,12 @@ CustomERBS::CustomERBS(PCurve<float,3>* c, int n, int d)
     this->_n = n;
     this->_s = c->getParStart();
     this->_e = c->getParEnd();
-    //this->_d = d;
+    this->_deg = deg;
 
     _kv = generateKnotVector();
-    if (_curve->isClosed()) _n++;
-    createBezierCurves(_curve, d);
+    if (_curve->isClosed()) _n++; //numofLocalCurves
+    //createBezierCurves(_curve, _deg);
+    createLocalCurves(_curve, _deg);
 }
 
 CustomERBS::~CustomERBS() {}
@@ -48,13 +50,65 @@ float CustomERBS::getT(float t, int index)
     //return t; //need to return something for compiler
 }
 
-void CustomERBS::createSubcurves(PCurve<float,3> *c)
+//void CustomERBS::createSubcurves(PCurve<float,3> *c)
+//{
+//    _localCurves.setDim(_n);
+
+//    for(int i = 1; i < _n; i++)
+//    {
+//        _localCurves[i-1] = new SubMyCurve(c, _kv[i-1], _kv[i+1], _kv[i]);
+//    }
+
+//    if (_curve->isClosed())
+//    {
+//        _localCurves[_n-1] = _localCurves[0];
+//    }
+//    else
+//    {
+//        _localCurves[_n-1] = new SubMyCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n]);
+//    }
+
+//    visualizeLocalCurves();
+//}
+
+//void CustomERBS::createBezierCurves(PCurve<float,3>* c, int d)
+//{
+//    _localCurves.setDim(_n);
+
+//    for(int i = 1; i < _n; i++)
+//    {
+//        _localCurves[i-1] = new CustomBezierCurve(c, _kv[i-1], _kv[i+1], _kv[i], d);
+//    }
+
+//    if (_curve->isClosed())
+//    {
+//        _localCurves[_n-1] = _localCurves[0];
+//    }
+//    else
+//    {
+//        _localCurves[_n-1] = new CustomBezierCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n], d);
+//    }
+
+//    visualizeLocalCurves();
+//}
+
+void CustomERBS::createLocalCurves(PCurve<float,3>* c, int d)
 {
     _localCurves.setDim(_n);
 
     for(int i = 1; i < _n; i++)
     {
-        _localCurves[i-1] = new SubMyCurve(c, _kv[i-1], _kv[i+1], _kv[i]);
+        switch (_type)
+        {
+        case SUB_CURVE:
+            _localCurves[i-1] = new SubMyCurve(c, _kv[i-1], _kv[i+1], _kv[i]);
+            break;
+        case BEZIER_CURVE:
+            _localCurves[i-1] = new CustomBezierCurve(c, _kv[i-1], _kv[i+1], _kv[i], d);
+            break;
+        default:
+            break;
+        }
     }
 
     if (_curve->isClosed())
@@ -63,32 +117,20 @@ void CustomERBS::createSubcurves(PCurve<float,3> *c)
     }
     else
     {
-        _localCurves[_n-1] = new SubMyCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n]);
+        switch (_type)
+        {
+        case SUB_CURVE:
+            _localCurves[_n-1] = new SubMyCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n]);
+            break;
+        case BEZIER_CURVE:
+            _localCurves[_n-1] = new CustomBezierCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n], d);
+            break;
+        default:
+            break;
+        }
     }
 
     visualizeLocalCurves();
-}
-
-void CustomERBS::createBezierCurves(PCurve<float,3>* c, int d)
-{
-    _localCurves.setDim(_n);
-
-    for(int i = 1; i < _n; i++)
-    {
-        _localCurves[i-1] = new CustomBezierCurve(c, _kv[i-1], _kv[i+1], _kv[i], d);
-    }
-
-    if (_curve->isClosed())
-    {
-        _localCurves[_n-1] = _localCurves[0];
-    }
-    else
-    {
-        _localCurves[_n-1] = new CustomBezierCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n], d);
-    }
-
-    visualizeLocalCurves();
-
 }
 
 void CustomERBS::visualizeLocalCurves()
@@ -96,7 +138,7 @@ void CustomERBS::visualizeLocalCurves()
     for (int i = 0; i < _localCurves.getDim() - 1; i++)
     {
         _localCurves[i]->toggleDefaultVisualizer();
-        _localCurves[i]->replot(50,2);
+        _localCurves[i]->replot(50); //2
         _localCurves[i]->setColor(GMlib::GMcolor::GreenYellow);
         _localCurves[i]->setVisible(false);
         this->insert(_localCurves[i]);
@@ -121,10 +163,10 @@ void CustomERBS::eval(float t, int d, bool)
     int index = findIndex(t);
     //qDebug() << "index of t" << index;
 
-    float w = (t -_kv[index])/(_kv[index+1] - _kv[index]);
+    _scaleWt = (t -_kv[index])/(_kv[index+1] - _kv[index]); //t scaling
+    _scaleB = 1.0 / (_kv[index+1] - _kv[index]); //b scaling
 
-    _scale = 1.0 / (_kv[index+1] - _kv[index]);
-    GMlib::DVector<float> BFunction = makeBFunction(w, d, _scale);
+    GMlib::DVector<float> BFunction = makeBFunction(_scaleWt,_scaleB, d);
 
     GMlib::DVector<GMlib::Vector<float,3>> c1 = _localCurves[index-1]->evaluateParent(getT(t, index), d);
     GMlib::DVector<GMlib::Vector<float,3>> c2 = _localCurves[index]->evaluateParent(getT(t, index+1), d);
@@ -135,12 +177,15 @@ void CustomERBS::eval(float t, int d, bool)
 
     if (d > 0)
         this->_p[1] = c1[1] + BFunction[0]*gt[1] + BFunction[1]*gt[0];
+
     if (d > 1)
         this->_p[2] = c1[2] + BFunction[0]*gt[2] + 2*BFunction[1]*gt[1] + BFunction[2]*gt[0];
-//    if (d > 2)
-//        this->_p[3] = c1[3];
-//    if (d > 3)
-//        this->_p[4] = c1[4];
+
+    if (d > 2)
+        this->_p[3] = c1[3] + BFunction[0]*gt[3] + 3*BFunction[1]*gt[2] + 3*BFunction[2]*gt[1] + BFunction[3]*gt[0];
+
+    if (d > 3)
+        this->_p[4] = c1[4] + BFunction[0]*gt[4] + 4*BFunction[1]*gt[3] + 6*BFunction[2]*gt[2] + 4*BFunction[3]*gt[1] + BFunction[4]*gt[0];
 }
 
 
@@ -159,7 +204,7 @@ bool CustomERBS::isClosed()
     return _curve->isClosed();
 }
 
-GMlib::DVector<float> CustomERBS::makeBFunction(float t, float d, float scale)
+GMlib::DVector<float> CustomERBS::makeBFunction(float t, float scale, float d)
 {
     GMlib::DVector<float> B;
     B.setDim(d+1);
@@ -201,10 +246,66 @@ int CustomERBS::findIndex(float t)
 
 void CustomERBS::localSimulate(double dt)
 {
-    auto rotvec = GMlib::Vector<float,3>(1.0f, 1.0f, 1.0f);
-    for(int i=0; i < _localCurves.getDim() - 1; i++)
+// 1
+//    auto rotvec = GMlib::Vector<float,3>(1.0f, 1.0f, 1.0f);
+//    for(int i=0; i < _localCurves.getDim() - 1; i++)
+//    {
+//        _localCurves[i]->rotate(GMlib::Angle(2*dt), rotvec);
+//    }
+
+// 2
+//    _sum += (_flag ? dt : -dt);
+
+//    if(_sum >= 1.0 || _sum <= -1.0)
+//    {
+//        _flag = !_flag;
+//    }
+
+//    std::cout<<_sum << std::endl;
+
+
+//    for(int i = 0; i < _localCurves.getDim()-1; i++)
+//    {
+//        float tr = std::sin(_sum*0.1);
+//        float rot = std::sin(_sum*0.1);
+
+//        _localCurves[i]->translateGlobal(GMlib::Vector<float,3> (0.0, tr, 0.0));
+//        _localCurves[i]->rotate(GMlib::Angle(dRot), GMlib::Vector<float,3>(0.0, 0.0, 1.0));
+//    }
+
+// 3
+//    switch (_type)
+//    {
+//    case SUB_CURVE:
+//        break;
+//    case BEZIER_CURVE:
+//        _sum += dt*10;
+
+//        for(int i=0; i < _localCurves.getDim() - 1; i++)
+//        {
+//            if (i%2 == 0)
+//            {
+//                //_localCurves[i]->translate(GMlib::Vector<float,3> (0.0,0.0,std::sin(_sum)*dt*5));
+//                //_localCurves[i]->translate(GMlib::Vector<float,3> (dt,dt,0.0));
+//            }
+//        }
+//        this->rotate(GMlib::Angle(M_PI/8 * dt), GMlib::Vector<float,3>( 0.0f, 0.0f, 1.0f ));
+
+//        break;
+//    }
+
+
+// 4 //scaling
+    _cossum += dt;
+    float sinfunc = std::cos(_cossum);
+    //std::cout << _sum << std::endl;
+    if (sinfunc >= 0) _mult = 0.01;
+    else _mult = -0.01;
+
+    for(int i = 0; i < _localCurves.getDim()-1; i++)
     {
-        _localCurves[i]->rotate(GMlib::Angle(2), rotvec);
+        auto pos = _localCurves[i]->getPos();
+        _localCurves[i]->translateGlobal( _mult * pos);
     }
 
 }

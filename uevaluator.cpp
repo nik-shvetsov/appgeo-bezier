@@ -4,7 +4,7 @@ UEvaluator::UEvaluator(){}
 
 UEvaluator::~UEvaluator(){}
 
-void UEvaluator::evalBezier(GMlib::DMatrix<float> &BHm, int d, float t, float scale)
+void UEvaluator::evalBezier(GMlib::DMatrix<float> &BHm, int d, float t, float scale) //global/local affine mapping - global/local scaling factor
 {
     if (d < 1) // Escape if no derivatives has to be computed
     {
@@ -25,6 +25,8 @@ void UEvaluator::evalBezier(GMlib::DMatrix<float> &BHm, int d, float t, float sc
             BHm[i][j] = float(0);
         }
     }
+
+
 
     //First step, bhp polynomials up to degree d
     //One for each row, starting from the bottom up
@@ -100,6 +102,7 @@ void UEvaluator::evalBSpline(GMlib::DMatrix<float> &BHm, float t, int idx, GMlib
     const int d = (kv.getDim() + 1) / 3;
     BHm.setDim(d+1, d+1);
 
+    // Storing translated and scaled t values
     // Transformed t value
     GMlib::DVector<float> w;
 
@@ -118,6 +121,7 @@ void UEvaluator::evalBSpline(GMlib::DMatrix<float> &BHm, float t, int idx, GMlib
         }
 
         // Compute the bernstein polynomials
+        // Compute the k b-spline
         BHm[i][0] = ( 1 - w[0]) * BHm[i+1][0];
         for( int j = 1; j < d - i; j++ )
         {
@@ -154,17 +158,18 @@ void UEvaluator::evalBSpline(GMlib::DMatrix<float> &BHm, float t, int idx, GMlib
     }
 }
 
-float UEvaluator::evalCERBS()
-{
-    return 0;
-}
+//float UEvaluator::evalCERBS()
+//{
+//    return 0;
+//}
 
 float UEvaluator::getW(float t, int idx, int d, GMlib::DVector<float> kv) // get t scale
 {
-    return (t - kv[idx]) / (kv[idx+d] - kv[idx]);
+    return (t - kv[idx]) / (kv[idx+d] - kv[idx]);   //(equation 5.43)(p.115) scale of the center
 }
 
 float UEvaluator::getWder(int idx, int d, GMlib::DVector<float> kv) //omega val, scale der
+                                                                    //(equation 5.47)(p.121)scale of the derivatives
 {
     return float(1) / (kv(idx+d) - kv(idx));
 }

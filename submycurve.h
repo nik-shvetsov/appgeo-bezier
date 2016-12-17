@@ -27,11 +27,14 @@ protected:
     float                   getEndP();
     float                   getStartP();
 
-    //void                    localSimulate(double dt);
+    void                    localSimulate(double dt);
 
 private:
     //local help functions
-    void                    set(GMlib::PCurve<float, 3>* c, float s, float e, float t);
+    void                    setParams(GMlib::PCurve<float, 3>* c, float s, float e, float t);
+
+    float                   _sum;
+    bool                    _flag = true;
 };
 
 #endif // SUBMYCURVE_H

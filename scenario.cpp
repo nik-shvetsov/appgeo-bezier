@@ -6,6 +6,7 @@
 #include "beziercurve.h"
 #include "knotvector.h"
 #include "erbscurve.h"
+#include "uevaluator.h"
 
 //// hidmanager
 //#include "hidmanager/defaulthidmanager.h"
@@ -45,6 +46,7 @@ void Scenario::initializeScenario() {
   proj_rcpair.camera->setCuttingPlanes( 1.0f, 8000.0f );
   proj_rcpair.camera->rotateGlobal( GMlib::Angle(-45), GMlib::Vector<float,3>( 1.0f, 0.0f, 0.0f ) );
   proj_rcpair.camera->translateGlobal( GMlib::Vector<float,3>( 0.0f, -20.0f, 20.0f ) );
+  proj_rcpair.camera->enableCulling(false);
   scene()->insertCamera( proj_rcpair.camera.get() );
   proj_rcpair.renderer->reshape( GMlib::Vector<int,2>(init_viewport_size, init_viewport_size) );
 
@@ -85,7 +87,7 @@ void Scenario::initializeScenario() {
   std::vector<GMlib::Color> colorsVec = {GMlib::GMcolor::Blue,GMlib::GMcolor::Red,GMlib::GMcolor::Green,GMlib::GMcolor::Yellow,GMlib::GMcolor::Orange,GMlib::GMcolor::Aqua,
                                         GMlib::GMcolor::AliceBlue,GMlib::GMcolor::AquaMarine,GMlib::GMcolor::Beige,GMlib::GMcolor::BlueViolet,GMlib::GMcolor::BurlyWood,GMlib::GMcolor::Coral
                                         };
-  //int parts = 12; //12
+//  int parts = 12; //12
 
 //  auto kv = new KnotVector(mycurve, parts); //0, M_2PI
 //  GMlib::DVector<float> num_kv = kv->getKnotVector();
@@ -133,8 +135,7 @@ void Scenario::initializeScenario() {
 
 
   //custom bspline test
-
-  auto erbs = new CustomERBS(mycurve, 12, 3); //12
+  auto erbs = new CustomERBS(mycurve, 12, 4); //12
   erbs->toggleDefaultVisualizer();
   //bspline->insertVisualizer(curve_visualizer);
   erbs->replot(500,2);
@@ -143,6 +144,12 @@ void Scenario::initializeScenario() {
 
   _cerbs.push_back(erbs);
   scene()->insert(erbs);
+
+
+//  auto eval = new UEvaluator();
+//  GMlib::DMatrix<float> bh;
+//  eval->evalBezier(bh,3,1,1);
+//  std::cout << bh << std::endl;
 
 
   //Standart GMlib implementation

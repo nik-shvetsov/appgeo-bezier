@@ -25,7 +25,7 @@ public:
   void    simulatingReplot();
 
 private:
-  std::vector<float> _knotVec;
+  //std::vector<float> _knotVec;
   std::vector<Color*> _colorsVec;
 
   std::vector<SubMyCurve*> _subPartsCurve;
