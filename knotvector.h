@@ -6,7 +6,7 @@
 class KnotVector
 {
     public:
-    //KnotVector(GMlib::PCurve<float,3>* c, float start, float end, int n);//order
+    //KnotVector(GMlib::PCurve<float,3>* c, float start, float end, int n); //order
     KnotVector(GMlib::PCurve<float,3>* c, int n);
     ~KnotVector();
 

@@ -15,6 +15,7 @@ CustomERBS::CustomERBS(PCurve<float,3> *c, int n)
 
     _kv = generateKnotVector();
     if (_curve->isClosed()) _n++; //numofLocalCurves
+
     //createSubcurves(_curve);
     createLocalCurves(_curve, _deg);
 }
@@ -31,6 +32,7 @@ CustomERBS::CustomERBS(PCurve<float,3>* c, int n, int deg)
 
     _kv = generateKnotVector();
     if (_curve->isClosed()) _n++; //numofLocalCurves
+
     //createBezierCurves(_curve, _deg);
     createLocalCurves(_curve, _deg);
 }
@@ -115,8 +117,7 @@ void CustomERBS::eval(float t, int d, bool)
     //number of derivatives to compute
     this->_p.setDim(d+1);
 
-    //c(t) = sum( ci(t)*Bi(t) )
-
+    //c(t) = sum(ci(t)*Bi(t))
     //qDebug() << "t" << t;
     int index = findIndex(t);
     //qDebug() << "index of t" << index;
@@ -214,56 +215,40 @@ int CustomERBS::findIndex(float t)
 
 void CustomERBS::localSimulate(double dt)
 {
-// 1
-//    auto rotvec = GMlib::Vector<float,3>(1.0f, 1.0f, 1.0f);
-//    for(int i=0; i < _localCurves.getDim() - 1; i++)
-//    {
-//        _localCurves[i]->rotate(GMlib::Angle(2*dt), rotvec);
-//    }
+    //global translation and rotation
+    _accum += (_flag ? dt : -dt);
+    if(_accum >= 1.0 || _accum <= -1.0)
+    {
+        _flag = !_flag;
+    }
 
-// 2
-//    _sum += (_flag ? dt : -dt);
+    for(int i = 0; i < _localCurves.getDim()-1; i++)
+    {
+        float trVec = 0.1 * std::sin(_accum);
+        float rotAngle = std::sin(_accum * 0.1);
+        _localCurves[i]->translateGlobal(GMlib::Vector<float,3> (0.0, 0.0, trVec));
+        _localCurves[i]->rotate(GMlib::Angle(rotAngle), GMlib::Vector<float,3>(0.0, 0.0, 1.0));
+    }
 
-//    if(_sum >= 1.0 || _sum <= -1.0)
-//    {
-//        _flag = !_flag;
-//    }
-
-//    std::cout<<_sum << std::endl;
-
-
-//    for(int i = 0; i < _localCurves.getDim()-1; i++)
-//    {
-//        float tr = std::sin(_sum*0.1);
-//        float rot = std::sin(_sum*0.1);
-
-//        _localCurves[i]->translateGlobal(GMlib::Vector<float,3> (0.0, tr, 0.0));
-//        _localCurves[i]->rotate(GMlib::Angle(dRot), GMlib::Vector<float,3>(0.0, 0.0, 1.0));
-//    }
-
-// 3
 //    switch (_type)
 //    {
 //    case SUB_CURVE:
 //        break;
 //    case BEZIER_CURVE:
-//        _sum += dt*10;
-
-//        for(int i=0; i < _localCurves.getDim() - 1; i++)
-//        {
-//            if (i%2 == 0)
-//            {
-//                //_localCurves[i]->translate(GMlib::Vector<float,3> (0.0,0.0,std::sin(_sum)*dt*5));
-//                //_localCurves[i]->translate(GMlib::Vector<float,3> (dt,dt,0.0));
-//            }
-//        }
-//        this->rotate(GMlib::Angle(M_PI/8 * dt), GMlib::Vector<float,3>( 0.0f, 0.0f, 1.0f ));
-
 //        break;
 //    }
 
+    //sin translation of even curves
+    _sum += dt*10;
+    for(int i=0; i < _localCurves.getDim() - 1; i++)
+    {
+        if (i%2 == 0)
+        {
+            _localCurves[i]->translate(GMlib::Vector<float,3>(0.0,0.0,std::sin(_sum)*0.05));
+        }
+    }
 
-// 4 //scaling
+    //scaling
     _cossum += dt;
     float sinfunc = std::cos(_cossum);
     //std::cout << _sum << std::endl;
@@ -275,5 +260,4 @@ void CustomERBS::localSimulate(double dt)
         auto pos = _localCurves[i]->getPos();
         _localCurves[i]->translateGlobal( _mult * pos);
     }
-
 }

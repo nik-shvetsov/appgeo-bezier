@@ -18,9 +18,6 @@ public:
     ~CustomERBS();
 
     GMlib::DVector<float>       generateKnotVector();
-
-    //void                        createSubcurves(PCurve<float,3>* g);
-    //void                        createBezierCurves(PCurve<float,3> *g, int d);
     void                        createLocalCurves(PCurve<float,3>* c, int d);
     void                        visualizeLocalCurves();
 
@@ -32,7 +29,7 @@ protected:
     float                                       _scaleB = 1.0;
     float                                       _scaleWt;
     GMlib::DVector<float>                       _kv;
-    int                                         _deg; //bezier deg dim
+    int                                         _deg = 2; //bezier deg dim
     int                                         _n; //number of local curves
     PCurve<float,3>*                            _curve;
     GMlib::DVector<GMlib::PCurve<float,3>*>     _localCurves;
@@ -51,11 +48,12 @@ protected:
 
 private:
 
-    float               _timer;
+    float               _timer = 0.0;
+    float               _accum = 0.0; //dt [-1;1] accumulator
     float               _cossum = M_PI_2; //function cos variable
     float               _mult = 0.001; //scaling speed
     bool                _flag = true;
-    float               _sum;
+    float               _sum = 0.0;
 
   }; // END class
 

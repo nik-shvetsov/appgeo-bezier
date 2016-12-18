@@ -81,15 +81,7 @@ void CustomBezierCurve::eval(float t, int d, bool /*l*/)
 
 void CustomBezierCurve::localSimulate(double dt)
 {
-    //global rotation
-    this->rotate(GMlib::Angle(M_PI/4 * dt), GMlib::Vector<float,3>( 0.0f, 0.0f, 1.0f ));
-
-
-    //auto rotvec = GMlib::Vector<float,3>(0.25f, 0.5f, 1.0f);
-//    auto rotvec = GMlib::Vector<float,3>(1.0f, 1.0f, 1.0f);
-//    rotate(GMlib::Angle(2), rotvec);
-    //this->translate(GMlib::Vector<float,3>(0.2,0.0,0.0));
-    //this->rotate(GMlib::Angle(M_PI/4 * dt), GMlib::Vector<float,3>( 1.0f, 0.0f, 0.0f ));
+    this->rotate(GMlib::Angle(M_PI/4 * dt), GMlib::Vector<float,3>(0.0, 0.0, 1.0));
 }
 
 

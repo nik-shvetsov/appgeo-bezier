@@ -72,22 +72,13 @@ void Scenario::initializeScenario() {
   scene()->insertCamera( top_rcpair.camera.get() );
   top_rcpair.renderer->reshape( GMlib::Vector<int,2>(init_viewport_size, init_viewport_size) );
 
-
   //auto curve_visualizer = new GMlib::PCurveVisualizer<float,3>;
   //auto curve_visualizer = new GMlib::PCurveDefaultVisualizer<float,3>;
 
-
-//took to controller mycurve
-
-
-
-//  auto eval = new UEvaluator();
-//  GMlib::DMatrix<float> bh;
-//  eval->evalBezier(bh,3,1,1);
-//  std::cout << bh << std::endl;
-
-
-
+  //  auto eval = new UEvaluator();
+  //  GMlib::DMatrix<float> bh;
+  //  eval->evalBezier(bh,3,1,1);
+  //  std::cout << bh << std::endl;
 
   /*
   // Surface visualizers

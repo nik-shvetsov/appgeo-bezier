@@ -5,7 +5,7 @@ Controller::Controller()
     this->setSurroundingSphere(GMlib::Sphere<float,3>(100.0));
 
     std::vector<GMlib::Color> colorsVec = {GMlib::GMcolor::Blue,GMlib::GMcolor::Red,GMlib::GMcolor::Green,GMlib::GMcolor::Yellow,GMlib::GMcolor::Orange,GMlib::GMcolor::Aqua,
-                                            GMlib::GMcolor::AliceBlue,GMlib::GMcolor::AquaMarine,GMlib::GMcolor::Beige,GMlib::GMcolor::BlueViolet,GMlib::GMcolor::BurlyWood,
+                                           GMlib::GMcolor::AliceBlue,GMlib::GMcolor::AquaMarine,GMlib::GMcolor::Beige,GMlib::GMcolor::BlueViolet,GMlib::GMcolor::BurlyWood,
                                            GMlib::GMcolor::Coral};
     _colorsVec = colorsVec;
 
@@ -19,7 +19,8 @@ Controller::Controller()
     this->insert(mycurve);
 
     //ERBS curve
-    auto erbs = new CustomERBS(mycurve, 12, 4); //12
+    auto erbs = new CustomERBS(mycurve, 12, 4); //local Bezier curves constructor
+    //auto erbs = new CustomERBS(mycurve, 12); //local subcurves constructor
     erbs->toggleDefaultVisualizer();
     //erbs->insertVisualizer(curve_visualizer);
     erbs->replot(500,2);
@@ -29,7 +30,7 @@ Controller::Controller()
     this->insert(erbs);
 
     //Old
-    //  int parts = 12; //12
+    //  int parts = 12;
     //  auto kv = new KnotVector(mycurve, parts); //0, M_2PI
     //  GMlib::DVector<float> num_kv = kv->getKnotVector();
 
@@ -50,10 +51,8 @@ Controller::Controller()
     //  }
 
     //bezier local curves
-    //  std::vector<CustomBezierCurve*> _bezierPartsCurve;
     //  for (int i = 0; i < parts; i++) //(int i = 0; i < parts; i++)
     //  {
-    //      //auto submycurve = new SubMyCurve(mycurve,i*M_2PI/parts,(i+1)*M_2PI/parts);
     //      auto bezmycurve = new CustomBezierCurve(mycurve,num_kv[i+1],num_kv[i+3],num_kv[i+2], 2);
     //      //qDebug() << num_kv[i] << num_kv[i+1] << num_kv[i+2];
     //      bezmycurve->toggleDefaultVisualizer();

@@ -56,5 +56,5 @@ bool SubMyCurve::isClosed() const
 
 void SubMyCurve::localSimulate(double dt)
 {
-    //this->rotate(GMlib::Angle(M_PI/4 * dt), GMlib::Vector<float,3>( 1.0f, 0.0f, 0.0f ));
+    this->rotate(GMlib::Angle(M_PI/4 * dt), GMlib::Vector<float,3>(0.0, 0.0, 1.0));
 }
