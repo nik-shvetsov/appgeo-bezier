@@ -13,6 +13,7 @@ class CustomERBS;
 class CustomBezierCurve;
 class SubMyCurve;
 class KnotVector;
+class Controller;
 
 class Scenario : public GMlibWrapper {
   Q_OBJECT
@@ -25,12 +26,8 @@ public:
   void    simulatingReplot();
 
 private:
-  //std::vector<float> _knotVec;
-  std::vector<Color*> _colorsVec;
+  Controller* _controller;
 
-  std::vector<SubMyCurve*> _subPartsCurve;
-  std::vector<CustomBezierCurve*> _bezierPartsCurve;
-  std::vector<CustomERBS*> _cerbs;
 };
 
 #endif // SCENARIO_H

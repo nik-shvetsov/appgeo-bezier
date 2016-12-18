@@ -26,8 +26,6 @@ void UEvaluator::evalBezier(GMlib::DMatrix<float> &BHm, int d, float t, float sc
         }
     }
 
-
-
     //First step, bhp polynomials up to degree d
     //One for each row, starting from the bottom up
     BHm[d-1][0] = 1 - t;

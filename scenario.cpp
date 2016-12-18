@@ -7,6 +7,7 @@
 #include "knotvector.h"
 #include "erbscurve.h"
 #include "uevaluator.h"
+#include "controller.h"
 
 //// hidmanager
 //#include "hidmanager/defaulthidmanager.h"
@@ -76,74 +77,8 @@ void Scenario::initializeScenario() {
   //auto curve_visualizer = new GMlib::PCurveDefaultVisualizer<float,3>;
 
 
-  auto mycurve = new MyCurve(2);
-  mycurve->toggleDefaultVisualizer();
-  //mycurve->insertVisualizer(curve_visualizer);
-  mycurve->replot(100,2);
-  mycurve->setColor(GMlib::GMcolor::Black);
-  scene()->insert(mycurve);
+//took to controller mycurve
 
-
-  std::vector<GMlib::Color> colorsVec = {GMlib::GMcolor::Blue,GMlib::GMcolor::Red,GMlib::GMcolor::Green,GMlib::GMcolor::Yellow,GMlib::GMcolor::Orange,GMlib::GMcolor::Aqua,
-                                        GMlib::GMcolor::AliceBlue,GMlib::GMcolor::AquaMarine,GMlib::GMcolor::Beige,GMlib::GMcolor::BlueViolet,GMlib::GMcolor::BurlyWood,GMlib::GMcolor::Coral
-                                        };
-//  int parts = 12; //12
-
-//  auto kv = new KnotVector(mycurve, parts); //0, M_2PI
-//  GMlib::DVector<float> num_kv = kv->getKnotVector();
-
-//  std::vector<SubMyCurve*> _subPartsCurve;
-//  for (int i = 0; i < parts; i++) //(int i = 0; i < parts; i++)
-//  {
-//      //auto submycurve = new SubMyCurve(mycurve,i*M_2PI/parts,(i+1)*M_2PI/parts);
-//      auto submycurve = new SubMyCurve(mycurve,num_kv[i+1],num_kv[i+2]);
-//      //qDebug() << num_kv[i] << num_kv[i+1] << num_kv[i+2];
-//      submycurve->toggleDefaultVisualizer();
-//      //mycurve->insertVisualizer(curve_visualizer);
-//      submycurve->replot(100,2);
-//      submycurve->setColor(colorsVec[i]);
-//      submycurve->translate(GMlib::Vector<float,3>(0,0,1));
-//      _subPartsCurve.push_back(submycurve);
-//      scene()->insert(submycurve);
-//  }
-
-  //bezier local curves
-//  std::vector<CustomBezierCurve*> _bezierPartsCurve;
-//  for (int i = 0; i < parts; i++) //(int i = 0; i < parts; i++)
-//  {
-//      //auto submycurve = new SubMyCurve(mycurve,i*M_2PI/parts,(i+1)*M_2PI/parts);
-//      auto bezmycurve = new CustomBezierCurve(mycurve,num_kv[i+1],num_kv[i+3],num_kv[i+2], 2);
-//      //qDebug() << num_kv[i] << num_kv[i+1] << num_kv[i+2];
-//      bezmycurve->toggleDefaultVisualizer();
-//      //bezmycurve->insertVisualizer(curve_visualizer);
-//      bezmycurve->replot(100,2);
-//      bezmycurve->setColor(colorsVec[i]);
-//      bezmycurve->translate(GMlib::Vector<float,3>(0,0,2));
-//      _bezierPartsCurve.push_back(bezmycurve);
-//      scene()->insert(bezmycurve);
-//  }
-
-
-//  int d = 4; //4 - ideal
-//  auto erbscurve = new CustomERBSCurve(CustomERBSCurve::LOCAL_CURVES_TYPE::BEZIER_CURVES, mycurve, 200, d);
-//  erbscurve->toggleDefaultVisualizer();
-//  erbscurve->replot(200,4);
-//  erbscurve->setColor(GMlib::GMcolor::Silver);
-//  erbscurve->translate(GMlib::Vector<float,3>(0,0,3));
-//  scene()->insert(erbscurve);
-
-
-
-  //custom bspline test
-  auto erbs = new CustomERBS(mycurve, 12, 4); //12
-  erbs->toggleDefaultVisualizer();
-  //bspline->insertVisualizer(curve_visualizer);
-  erbs->replot(500,2);
-  erbs->setColor(GMlib::GMcolor::Cyan);
-  erbs->translate(GMlib::Vector<float,3>(0,0,3));
-
-  _cerbs.push_back(erbs);
-  scene()->insert(erbs);
 
 
 //  auto eval = new UEvaluator();
@@ -152,49 +87,32 @@ void Scenario::initializeScenario() {
 //  std::cout << bh << std::endl;
 
 
-  //Standart GMlib implementation
-  /*
-  auto mycurve = new GMlib::PCircle<float>(2);
-  mycurve->toggleDefaultVisualizer();
-  //mycurve->insertVisualizer(curve_visualizer);
-  mycurve->replot(100,2);
-  mycurve->setColor(GMlib::GMcolor::Black);
-  scene()->insert(mycurve);
 
-
-  auto submycurve = new GMlib::PSubCurve<float>(mycurve, 0.0f, M_2PI, (0.0f + M_2PI) / 2);
-  submycurve->toggleDefaultVisualizer();
-  //mycurve->insertVisualizer(curve_visualizer);
-  submycurve->replot(100,2);
-  submycurve->setColor(GMlib::GMcolor::Red);
-  submycurve->translate(GMlib::Vector<float,3>(0,0,1));
-  scene()->insert(submycurve);
-  */
 
   /*
   // Surface visualizers
   auto surface_visualizer = new GMlib::PSurfNormalsVisualizer<float,3>;
 
-  // Surface
+  // Surface Torus
   auto surface = new TestTorus;
   surface->toggleDefaultVisualizer();
   surface->insertVisualizer(surface_visualizer);
   surface->replot(200,200,1,1);
   scene()->insert(surface);
-
   surface->test01();
   */
 
-}
-
-void Scenario::cleanupScenario() {
+  _controller = new Controller();
+  scene()->insert(_controller);
 
 }
 
 void Scenario::simulatingReplot()
 {
-    for(int i = 0; i < _cerbs.size(); i++)
-    {
-           _cerbs[i]->replot();
-    }
+    _controller->replotERBS();
+}
+
+void Scenario::cleanupScenario()
+{
+
 }
