@@ -33,8 +33,7 @@ KnotVector::KnotVector(GMlib::PCurve<float,3>* c, int n) //only for order 2, n -
         _dv[n+1] = _dv[n];
     }
 
-    //qDebug() << "Generated _kv" << "for closed?" << closed;
-    std::cout << "Generated _kv " << "for closed? " << closed << std::endl;
+    std::cout << "Generated _kv " << "for closed -  " << closed << std::endl;
     std::cout << _dv << std::endl;
 }
 

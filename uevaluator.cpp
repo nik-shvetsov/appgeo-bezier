@@ -158,17 +158,12 @@ void UEvaluator::evalBSpline(GMlib::DMatrix<float> &BHm, float t, int idx, GMlib
     }
 }
 
-//float UEvaluator::evalCERBS()
-//{
-//    return 0;
-//}
-
 float UEvaluator::getW(float t, int idx, int d, GMlib::DVector<float> kv) // get t scale
 {
     return (t - kv[idx]) / (kv[idx+d] - kv[idx]);   //(equation 5.43)(p.115) scale of the center
 }
 
-float UEvaluator::getWder(int idx, int d, GMlib::DVector<float> kv) //omega val, scale der
+float UEvaluator::getWder(int idx, int d, GMlib::DVector<float> kv) //omega val, scale der - diffiomorphism
                                                                     //(equation 5.47)(p.121)scale of the derivatives
 {
     return float(1) / (kv(idx+d) - kv(idx));

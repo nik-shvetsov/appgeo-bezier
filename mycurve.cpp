@@ -6,8 +6,6 @@ MyCurve::MyCurve( float scalefactor )
     _scf = scalefactor;
 }
 
-//MyCurve::MyCurve( const MyCurve& copy ) : PCurve<float,3>(copy) {}
-
 MyCurve::~MyCurve() {}
 
 void MyCurve::eval( float t, int d, bool /*l*/ ) {
@@ -113,9 +111,4 @@ bool MyCurve::isClosed() const {
 void MyCurve::setScaleFactor( float scalefactor ) {
 
     _scf = scalefactor;
-}
-
-void MyCurve::localSimulate(double dt)
-{
-
 }

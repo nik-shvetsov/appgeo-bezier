@@ -22,7 +22,7 @@ protected:
     float               getEndP();
     float               getStartP();
 
-    void localSimulate(double dt);
+    //void                localSimulate(double dt);
 
 };
 

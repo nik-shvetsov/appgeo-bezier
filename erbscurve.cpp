@@ -45,52 +45,10 @@ float CustomERBS::getT(float t, int index)
         return t;
     case BEZIER_CURVE:
         float w = (t - _kv[index - 1])/(_kv[index + 1] - _kv[index - 1]); //omega for bezier
-        return w;
+        return w;                                                         //affine global/local mapping
     }
     //return t; //need to return something for compiler
 }
-
-//void CustomERBS::createSubcurves(PCurve<float,3> *c)
-//{
-//    _localCurves.setDim(_n);
-
-//    for(int i = 1; i < _n; i++)
-//    {
-//        _localCurves[i-1] = new SubMyCurve(c, _kv[i-1], _kv[i+1], _kv[i]);
-//    }
-
-//    if (_curve->isClosed())
-//    {
-//        _localCurves[_n-1] = _localCurves[0];
-//    }
-//    else
-//    {
-//        _localCurves[_n-1] = new SubMyCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n]);
-//    }
-
-//    visualizeLocalCurves();
-//}
-
-//void CustomERBS::createBezierCurves(PCurve<float,3>* c, int d)
-//{
-//    _localCurves.setDim(_n);
-
-//    for(int i = 1; i < _n; i++)
-//    {
-//        _localCurves[i-1] = new CustomBezierCurve(c, _kv[i-1], _kv[i+1], _kv[i], d);
-//    }
-
-//    if (_curve->isClosed())
-//    {
-//        _localCurves[_n-1] = _localCurves[0];
-//    }
-//    else
-//    {
-//        _localCurves[_n-1] = new CustomBezierCurve(c, _kv[_n-1], _kv[_n+1], _kv[_n], d);
-//    }
-
-//    visualizeLocalCurves();
-//}
 
 void CustomERBS::createLocalCurves(PCurve<float,3>* c, int d)
 {
@@ -130,7 +88,7 @@ void CustomERBS::createLocalCurves(PCurve<float,3>* c, int d)
         }
     }
 
-    visualizeLocalCurves();
+    visualizeLocalCurves(); //and prepare _localCurves
 }
 
 void CustomERBS::visualizeLocalCurves()
@@ -138,9 +96,9 @@ void CustomERBS::visualizeLocalCurves()
     for (int i = 0; i < _localCurves.getDim() - 1; i++)
     {
         _localCurves[i]->toggleDefaultVisualizer();
-        _localCurves[i]->replot(50); //2
+        _localCurves[i]->replot(50);
         _localCurves[i]->setColor(GMlib::GMcolor::GreenYellow);
-        _localCurves[i]->setVisible(false);
+        _localCurves[i]->setVisible(false); //true
         this->insert(_localCurves[i]);
     }
 }
@@ -157,7 +115,7 @@ void CustomERBS::eval(float t, int d, bool)
     //number of derivatives to compute
     this->_p.setDim(d+1);
 
-    //c(t) = sum ci(t)*Bi(t)
+    //c(t) = sum( ci(t)*Bi(t) )
 
     //qDebug() << "t" << t;
     int index = findIndex(t);
@@ -207,22 +165,32 @@ bool CustomERBS::isClosed()
 GMlib::DVector<float> CustomERBS::makeBFunction(float t, float scale, float d)
 {
     GMlib::DVector<float> B;
-    B.setDim(d+1);
-//    B[0] = 3*pow(t,2) - 2*pow(t,3);
+    B.setDim(d + 1);
+// other test function
+//    B[0] = 3 * pow(t,2) - 2 * pow(t,3);
 //    if (d>0)
-//        B[1] = (6*t - 6*pow(t,2))*scale;
+//        B[1] = (6 * t - 6 * pow(t,2)) * scale;
 //    if (d>1)
-//        B[2] = (6 - 12*t)*scale*scale;
+//        B[2] = (6 - 12 * t) * scale * scale;
 //    if (d>2)
-//        B[3] = -12*scale*scale*scale;
+//        B[3] = -12 * scale * scale * scale;
 
-    B[0] = pow(sin(M_PI_2 * t),2);
+    B[0] = pow(sin(M_PI_2 * t), 2);
     if (d>0)
-        B[1] = (0.5 * M_PI * sin(M_PI * t))*scale;
+        B[1] = (0.5 * /*pow(M_PI,1) * */ sin(M_PI * t));
     if (d>1)
-        B[2] = (0.5 * M_PI * M_PI * cos(M_PI * t))*scale*scale;
+        B[2] = (0.5 * /*pow(M_PI,2) * */ cos(M_PI * t));
     if (d>2)
-        B[3] = (-0.5 * M_PI * M_PI * M_PI * sin(M_PI * t) )*scale*scale*scale;
+        B[3] = (-0.5 * /*pow(M_PI,3)* */ sin(M_PI * t));
+    if (d>3)
+        B[4] = (-0.5 * /*pow(M_PI,4)* */ cos(M_PI * t));
+
+    for (int i = 1; i <= d; i++)
+    {
+        B[i] *= pow(M_PI,i); //optimizing
+
+        B[i] *= pow(scale, i); //derivatives scaling
+    }
 
     return B;
 }
