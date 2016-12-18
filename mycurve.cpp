@@ -63,27 +63,6 @@ void MyCurve::eval( float t, int d, bool /*l*/ ) {
             this->_p[4][1] =  st_dddd;
             this->_p[4][2] =  float(0);
         }
-
-//        if( d > 4 ) {
-
-//            this->_p[5][0] = -st;
-//            this->_p[5][1] =  ct;
-//            this->_p[5][2] =  float(0);
-//        }
-
-//        if( d > 5 ) {
-
-//            this->_p[6][0] = -ct;
-//            this->_p[6][1] = -st;
-//            this->_p[6][2] =  float(0);
-//        }
-
-//        if( d > 6 ) {
-
-//            this->_p[7][0] =  st;
-//            this->_p[7][1] = -ct;
-//            this->_p[7][2] =  float(0);
-//        }
     }
 }
 

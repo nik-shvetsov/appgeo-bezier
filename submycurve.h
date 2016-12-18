@@ -32,9 +32,6 @@ protected:
 private:
     //local help functions
     void                    setParams(GMlib::PCurve<float, 3>* c, float s, float e, float t);
-
-    float                   _sum;
-    bool                    _flag = true;
 };
 
 #endif // SUBMYCURVE_H

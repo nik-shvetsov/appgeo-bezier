@@ -29,7 +29,7 @@ Controller::Controller()
     _cerbs.push_back(erbs);
     this->insert(erbs);
 
-    //Old
+    //Old stuff for checks
     //  int parts = 12;
     //  auto kv = new KnotVector(mycurve, parts); //0, M_2PI
     //  GMlib::DVector<float> num_kv = kv->getKnotVector();
@@ -64,6 +64,8 @@ Controller::Controller()
     //      this->insert(bezmycurve);
     //  }
 }
+
+Controller::~Controller(){}
 
 void Controller::replotERBS()
 {

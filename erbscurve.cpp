@@ -124,7 +124,7 @@ void CustomERBS::eval(float t, int d, bool)
 
     _scaleWt = (t -_kv[index])/(_kv[index+1] - _kv[index]); //t scaling
     _scaleB = 1.0 / (_kv[index+1] - _kv[index]); //b scaling
-
+                                                //shows that the ERBS curve is adjusted by the domain scaling factor
     GMlib::DVector<float> BFunction = makeBFunction(_scaleWt,_scaleB, d);
 
     GMlib::DVector<GMlib::Vector<float,3>> c1 = _localCurves[index-1]->evaluateParent(getT(t, index), d);
@@ -167,7 +167,7 @@ GMlib::DVector<float> CustomERBS::makeBFunction(float t, float scale, float d)
 {
     GMlib::DVector<float> B;
     B.setDim(d + 1);
-// other test function
+//test function
 //    B[0] = 3 * pow(t,2) - 2 * pow(t,3);
 //    if (d>0)
 //        B[1] = (6 * t - 6 * pow(t,2)) * scale;

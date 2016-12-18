@@ -15,6 +15,8 @@ class Controller : public GMlib::SceneObject
 
 public:
     Controller();
+    ~Controller();
+
     void                            replotERBS();
 
 protected:

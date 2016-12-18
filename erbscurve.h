@@ -29,7 +29,7 @@ protected:
     float                                       _scaleB = 1.0;
     float                                       _scaleWt;
     GMlib::DVector<float>                       _kv;
-    int                                         _deg = 2; //bezier deg dim
+    int                                         _deg = 2; //bezier degdimdr
     int                                         _n; //number of local curves
     PCurve<float,3>*                            _curve;
     GMlib::DVector<GMlib::PCurve<float,3>*>     _localCurves;

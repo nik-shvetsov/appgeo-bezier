@@ -7,7 +7,6 @@ CustomBezierCurve::CustomBezierCurve(PCurve<float,3>* c, float s, float e, float
     set(c, s, e, t, d);
 
     _scaleDer = float(1) / (_e - _s); //global/local scaling factor for derivatives
-                                        //shows that the ERBS curve is adjusted by the domain scaling factor
     _scaleCen = (_t - _s)/(_e - _s); //w // t should be scaled, affine global/local mapping
 
     //make control points
@@ -36,7 +35,7 @@ void CustomBezierCurve::set(PCurve<float,3>* curve, float s, float e, float t, i
     this->_s = s;
     this->_e = e;
     this->_t = t;
-    //this->_d = d;
+    this->_d = d;
 }
 
 int CustomBezierCurve::getDegree() const
