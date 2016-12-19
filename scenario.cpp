@@ -103,6 +103,11 @@ void Scenario::simulatingReplot()
     _controller->replotERBS();
 }
 
+void Scenario::toggleERBSLC()
+{
+    _controller->toggleLC();
+}
+
 void Scenario::cleanupScenario()
 {
 

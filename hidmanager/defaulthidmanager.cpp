@@ -476,6 +476,11 @@ void DefaultHidManager::heSimulateReplot()
     emit signSimulateReplot();
 }
 
+void DefaultHidManager::heToggleLocalCurves()
+{
+    emit signToggleLocalCurves();
+}
+
 Camera* DefaultHidManager::findCamera( const QString& view_name ) const {
 
   return _gmlib->camera(view_name).get();
@@ -622,6 +627,13 @@ void DefaultHidManager::setupDefaultHidBindings() {
                          this, SLOT(heReplotQuickLow()),
                          OGL_TRIGGER);
 
+  QString ha_id_toggle_local_curves =
+      registerHidAction( "Toggle Local curves",
+                         "Toggle LC",
+                         "Toggle LC",
+                         this, SLOT(heToggleLocalCurves()),
+                         OGL_TRIGGER);
+
 
 
   // Rendering
@@ -663,6 +675,7 @@ void DefaultHidManager::setupDefaultHidBindings() {
   registerHidMapping( ha_id_objint_replot_med,            new KeyPressInput( Qt::Key_P ) );
   registerHidMapping( ha_id_objint_replot_low,            new KeyPressInput( Qt::Key_P, Qt::ControlModifier) );
   registerHidMapping( ha_id_sim_toggle,                   new KeyPressInput( Qt::Key_R ) );
+  registerHidMapping( ha_id_toggle_local_curves,          new KeyPressInput( Qt::Key_R, Qt::ControlModifier ) );
   registerHidMapping( ha_id_render_toggle_shademode,      new KeyPressInput( Qt::Key_Z ) );
 
   registerHidMapping( ha_id_objsel_select,                new MousePressInput( Qt::RightButton ) );

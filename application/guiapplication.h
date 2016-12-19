@@ -46,9 +46,11 @@ signals:
 private:
   static std::unique_ptr<GuiApplication>      _instance;
   void                                        replotSimulate();
+  void                                        toggleLocalCurves();
 
 public:
   static const GuiApplication&                instance();
+
 };
 
 #endif // GUIAPPLICATION_H

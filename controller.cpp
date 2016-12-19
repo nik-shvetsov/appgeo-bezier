@@ -75,6 +75,14 @@ void Controller::replotERBS()
     }
 }
 
+void Controller::toggleLC()
+{
+    for(int i = 0; i < _cerbs.size(); i++)
+    {
+        _cerbs[i]->toggleVisLocalCurves();
+    }
+}
+
 void Controller::localSimulate(double dt)
 {
     //this->rotate(GMlib::Angle(M_PI/4*dt), GMlib::Vector<float,3>(0.0,0.0,1.0));

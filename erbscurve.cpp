@@ -90,18 +90,26 @@ void CustomERBS::createLocalCurves(PCurve<float,3>* c, int d)
         }
     }
 
-    visualizeLocalCurves(); //and prepare _localCurves
+    prepareLocalCurves();
 }
 
-void CustomERBS::visualizeLocalCurves()
+void CustomERBS::prepareLocalCurves()
 {
     for (int i = 0; i < _localCurves.getDim() - 1; i++)
     {
         _localCurves[i]->toggleDefaultVisualizer();
         _localCurves[i]->replot(50);
         _localCurves[i]->setColor(GMlib::GMcolor::GreenYellow);
-        _localCurves[i]->setVisible(false); //true
+        _localCurves[i]->setVisible(false);
         this->insert(_localCurves[i]);
+    }
+}
+
+void CustomERBS::toggleVisLocalCurves()
+{
+    for (int i = 0; i < _localCurves.getDim() - 1; i++)
+    {
+        _localCurves[i]->toggleVisible();
     }
 }
 

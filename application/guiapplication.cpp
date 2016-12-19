@@ -103,8 +103,9 @@ GuiApplication::afterOnSceneGraphInitialized() {
   connect( &_window, &Window::beforeRendering,        &_hidmanager, &DefaultHidManager::triggerOGLActions,
            Qt::DirectConnection );
 
-  connect( &_window, &Window::beforeRendering,         this, &GuiApplication::replotSimulate,
-             Qt::DirectConnection );
+  connect( &_window,    &Window::beforeRendering,
+           this,        &GuiApplication::replotSimulate,
+           Qt::DirectConnection );
 
   // Register an application close event in the hidmanager;
   // the QWindow must be closed instead of the application being quitted,
@@ -116,6 +117,9 @@ GuiApplication::afterOnSceneGraphInitialized() {
   // Connect some application spesific inputs.
   connect( &_hidmanager, &DefaultHidManager::signToggleSimulation,
            &_scenario,   &GMlibWrapper::toggleSimulation );
+
+  connect( &_hidmanager, &DefaultHidManager::signToggleLocalCurves,
+           this,   &GuiApplication::toggleLocalCurves);
 
   connect( &_hidmanager,          SIGNAL(signOpenCloseHidHelp()),
            _window.rootObject(),  SIGNAL(toggleHidBindView()) );
@@ -132,4 +136,9 @@ const GuiApplication& GuiApplication::instance() {  return *_instance; }
 void GuiApplication::replotSimulate()
 {
     _scenario.simulatingReplot();
+}
+
+void GuiApplication::toggleLocalCurves()
+{
+    _scenario.toggleERBSLC();
 }

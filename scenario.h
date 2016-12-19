@@ -24,6 +24,7 @@ public:
   void    cleanupScenario() override;
 
   void    simulatingReplot();
+  void    toggleERBSLC();
 
 private:
   Controller* _controller;

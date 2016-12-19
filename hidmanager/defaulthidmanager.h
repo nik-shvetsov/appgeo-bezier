@@ -32,6 +32,7 @@ signals:
   void signToggleSimulation();
   void signOpenCloseHidHelp();
   void signSimulateReplot();
+  void signToggleLocalCurves();
 
 private slots:
   virtual void                      heDeSelectAllObjects();
@@ -53,6 +54,10 @@ private slots:
   virtual void                      heSelectObjectTree( GMlib::SceneObject* obj );
   virtual void                      heToggleObjectDisplayMode();
   virtual void                      heToggleSimulation();
+  virtual void                      heToggleLocalCurves();
+
+
+
   virtual void                      heToggleSelectAllObjects();
 //  virtual void                      heUnlockCamera();
   virtual void                      heZoom( const HidInputEvent::HidInputParams& params );

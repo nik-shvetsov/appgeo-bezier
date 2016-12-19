@@ -18,7 +18,7 @@ public:
     ~Controller();
 
     void                            replotERBS();
-
+    void                            toggleLC();
 protected:
     void                            localSimulate(double dt) override;
 

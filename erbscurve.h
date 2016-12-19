@@ -19,7 +19,9 @@ public:
 
     GMlib::DVector<float>       generateKnotVector();
     void                        createLocalCurves(PCurve<float,3>* c, int d);
-    void                        visualizeLocalCurves();
+    void                        toggleVisLocalCurves();
+
+    void                        prepareLocalCurves();
 
     int                         findIndex(float t);
     bool                        isClosed();
