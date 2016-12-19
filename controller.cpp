@@ -19,15 +19,25 @@ Controller::Controller()
     this->insert(mycurve);
 
     //ERBS curve
-    auto erbs = new CustomERBS(mycurve, 12, 4); //local Bezier curves constructor
+    auto erbsBez = new CustomERBS(mycurve, 12, 4); //local Bezier curves constructor
     //auto erbs = new CustomERBS(mycurve, 12); //local subcurves constructor
-    erbs->toggleDefaultVisualizer();
+    erbsBez->toggleDefaultVisualizer();
     //erbs->insertVisualizer(curve_visualizer);
-    erbs->replot(500,2);
-    erbs->setColor(GMlib::GMcolor::Cyan);
-    erbs->translate(GMlib::Vector<float,3>(0,0,3));
-    _cerbs.push_back(erbs);
-    this->insert(erbs);
+    erbsBez->replot(500,2);
+    erbsBez->setColor(GMlib::GMcolor::Cyan);
+    erbsBez->translate(GMlib::Vector<float,3>(0,0,3));
+    _cerbs.push_back(erbsBez);
+    this->insert(erbsBez);
+
+    //ERBS curve
+    auto erbsSub = new CustomERBS(mycurve, 12); //local Subcurves constructor
+    erbsSub->toggleDefaultVisualizer();
+    //erbs->insertVisualizer(curve_visualizer);
+    erbsSub->replot(500,2);
+    erbsSub->setColor(GMlib::GMcolor::Silver);
+    erbsSub->translate(GMlib::Vector<float,3>(0,14,3));
+    _cerbs.push_back(erbsSub);
+    this->insert(erbsSub);
 
     //Old stuff for checks
     //  int parts = 12;

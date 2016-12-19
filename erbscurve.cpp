@@ -119,7 +119,6 @@ GMlib::DVector<float> CustomERBS::generateKnotVector()
     return kv->getKnotVector();
 }
 
-
 void CustomERBS::eval(float t, int d, bool)
 {
     //number of derivatives to compute
